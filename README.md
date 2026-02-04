@@ -51,60 +51,37 @@ Detects 14+ types of secrets including:
 
 ### Installation
 
-1. **Clone the repository**
-   \\\ash
+1. Clone the repository
+   ```bash
    git clone https://github.com/Vaishnavi19mdu/breachless.git
    cd breachless
-   \\\
+   ```
 
-2. **Install dependencies**
-   \\\ash
+2. Install dependencies
+   ```bash
    npm install
-   \\\
+   ```
 
-3. **Run the development server**
-   \\\ash
+3. Run the development server
+   ```bash
    npm run dev
-   \\\
+   ```
 
-4. **Open your browser**
-   Navigate to \http://localhost:3000\
+4. Open your browser and navigate to `http://localhost:3000`
 
 ## 📁 Project Structure
 
-\\\
-breachless/
-├── src/
-│   ├── App.tsx                 # Main landing page
-│   ├── Router.tsx              # Navigation handler
-│   ├── Logo.tsx                # 3D animated logo
-│   ├── SecurityVisual.tsx      # Animated blob effect
-│   ├── analyze/
-│   │   ├── AnalyzeExposure.tsx # Secret analyzer UI
-│   │   ├── SecretDetector.ts   # Detection logic
-│   │   └── types.ts            # TypeScript types
-│   └── index.tsx               # App entry point
-├── public/
-└── package.json
-\\\
+![Folder Structure](./assets/abcd.png)
 
 ## 🔒 How to Use
 
-1. **Navigate to the Analyzer**
-   - Click the "Analyze Exposure" button on the homepage
+1. **Navigate to the Analyzer** - Click the "Analyze Exposure" button on the homepage
 
-2. **Paste Your Code**
-   - Copy code from your .env files, config files, or scripts
-   - Paste into the text area
+2. **Paste Your Code** - Copy code from your .env files, config files, or scripts
 
-3. **Run Analysis**
-   - Click "Analyze Code"
-   - Wait 1-2 seconds for results
+3. **Run Analysis** - Click "Analyze Code" and wait 1-2 seconds
 
-4. **Review Results**
-   - See detected secrets with severity levels
-   - Read explanations of what each secret does
-   - Follow step-by-step remediation guides
+4. **Review Results** - See detected secrets with severity levels and remediation guides
 
 ## 🎨 Tech Stack
 
@@ -117,16 +94,13 @@ breachless/
 
 ### Available Scripts
 
-- \
-pm run dev\ - Start development server
-- \
-pm run build\ - Build for production
-- \
-pm run preview\ - Preview production build
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run preview` - Preview production build
 
 ### Adding New Secret Patterns
 
-Edit \src/analyze/SecretDetector.ts\ and add to the \SECRET_PATTERNS\ array.
+Edit `src/analyze/SecretDetector.ts` and add to the `SECRET_PATTERNS` array.
 
 ## 🤝 Contributing
 
