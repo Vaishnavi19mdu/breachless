@@ -1,4 +1,4 @@
-﻿# 🛡️ Breachless - Secret Exposure Analyzer
+# ??? Breachless - Secret Exposure Analyzer
 
 <div align="center">
   
@@ -10,13 +10,13 @@ A modern web application that detects hardcoded secrets in your code before they
 
 ---
 
-## 🎯 What is Breachless?
+## ?? What is Breachless?
 
 Breachless is a secret detection tool that helps developers identify exposed credentials, API keys, and sensitive data in their code before committing to version control. Paste your code or configuration files and get instant feedback on potential security vulnerabilities.
 
-## ✨ Features
+## ? Features
 
-### 🔍 **Comprehensive Secret Detection**
+### ?? **Comprehensive Secret Detection**
 Detects 14+ types of secrets including:
 - AWS Access & Secret Keys
 - GitHub Personal Access Tokens
@@ -26,24 +26,24 @@ Detects 14+ types of secrets including:
 - Private Cryptographic Keys
 - And more...
 
-### 📊 **Risk Analysis**
+### ?? **Risk Analysis**
 - Real-time scanning with severity levels (Critical, High, Medium, Low)
 - Line-by-line detection with masked previews
 - Overall risk assessment
 
-### 🎓 **Educational Guidance**
+### ?? **Educational Guidance**
 - Plain-English explanations of what each secret does
 - Step-by-step remediation instructions
 - Links to security best practices
 - How to use environment variables properly
 
-### 🎨 **Modern UI**
+### ?? **Modern UI**
 - Clean, dark-themed interface
 - Animated 3D blob visualization
 - Responsive design
 - Smooth transitions and effects
 
-## 🚀 Getting Started
+## ?? Getting Started
 
 ### Prerequisites
 - Node.js (v16 or higher)
@@ -69,11 +69,11 @@ Detects 14+ types of secrets including:
 
 4. Open your browser and navigate to `http://localhost:3000`
 
-## 📁 Project Structure
+## ?? Project Structure
 
 ![Folder Structure](./assets/abcd.png)
 
-## 🔒 How to Use
+## ?? How to Use
 
 1. **Navigate to the Analyzer** - Click the "Analyze Exposure" button on the homepage
 
@@ -83,14 +83,14 @@ Detects 14+ types of secrets including:
 
 4. **Review Results** - See detected secrets with severity levels and remediation guides
 
-## 🎨 Tech Stack
+## ?? Tech Stack
 
 - **Frontend**: React + TypeScript
 - **Styling**: Tailwind CSS
 - **3D Graphics**: Three.js
 - **Build Tool**: Vite
 
-## 🛠️ Development
+## ??? Development
 
 ### Available Scripts
 
@@ -102,15 +102,15 @@ Detects 14+ types of secrets including:
 
 Edit `src/analyze/SecretDetector.ts` and add to the `SECRET_PATTERNS` array.
 
-## 🤝 Contributing
+## ?? Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
-## 📄 License
+## ?? License
 
 This project is licensed under the MIT License.
 
-## ⚠️ Security Note
+## ?? Security Note
 
 This tool performs **client-side analysis only**. Your code never leaves your browser. However, always practice proper secret management:
 
@@ -122,5 +122,5 @@ This tool performs **client-side analysis only**. Your code never leaves your br
 ---
 
 <div align="center">
-Made with 🛡️ by the Breachless Team
+Made with ??? by the Breachless Team
 </div>
