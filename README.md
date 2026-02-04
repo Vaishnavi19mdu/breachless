@@ -75,17 +75,20 @@ Detects 14+ types of secrets including:
 \\\
 breachless/
 ├── src/
-│   ├── App.tsx                 # Main landing page
-│   ├── Router.tsx              # Navigation handler
-│   ├── Logo.tsx                # 3D animated logo
-│   ├── SecurityVisual.tsx      # Animated blob effect
-│   ├── analyze/
-│   │   ├── AnalyzeExposure.tsx # Secret analyzer UI
-│   │   ├── SecretDetector.ts   # Detection logic
-│   │   └── types.ts            # TypeScript types
-│   └── index.tsx               # App entry point
+│   ├── App.tsx
+│   ├── Router.tsx
+│   ├── Logo.tsx
+│   ├── SecurityVisual.tsx
+│   ├── index.tsx
+│   └── analyze/
+│       ├── AnalyzeExposure.tsx
+│       ├── SecretDetector.ts
+│       └── types.ts
 ├── public/
-└── package.json
+├── .gitignore
+├── .env.example
+├── package.json
+└── README.md
 \\\
 
 ## 🔒 How to Use
