@@ -52,20 +52,20 @@ Detects 14+ types of secrets including:
 ### Installation
 
 1. Clone the repository
-   \\\ash
+   bash
    git clone https://github.com/Vaishnavi19mdu/breachless.git
    cd breachless
-   \\\
+   
 
 2. Install dependencies
-   \\\ash
+   bash
    npm install
-   \\\
+   
 
 3. Run the development server
-   \\\ash
+   bash
    npm run dev
-   \\\
+   
 
 4. Open your browser and navigate to \http://localhost:3000\
 
