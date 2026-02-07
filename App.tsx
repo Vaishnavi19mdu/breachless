@@ -1,5 +1,6 @@
 ﻿import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "./context/AuthContext";
 import Logo from "./Logo";
 import SecurityVisual from "./SecurityVisual";
 import ContactForm from "./components/ContactForm";
@@ -7,6 +8,12 @@ import ContactForm from "./components/ContactForm";
 export default function App({ onNavigateToAnalyze }: { onNavigateToAnalyze?: () => void }) {
   const [input, setInput] = useState("");
   const navigate = useNavigate();
+  const { user, userData, logout } = useAuth();
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/login');
+  };
 
   return (
     <div className="bg-black text-white min-h-screen">
@@ -20,19 +27,35 @@ export default function App({ onNavigateToAnalyze }: { onNavigateToAnalyze?: () 
       {/* NAV */}
       <nav className="flex justify-between items-center px-10 py-6">
         <Logo />
-        <div className="flex gap-4">
-          <button 
-            onClick={() => navigate('/login')}
-            className="px-4 py-2 rounded-full border border-white/40 text-sm hover:border-white/60 transition-colors"
-          >
-            Login
-          </button>
-          <button 
-            onClick={() => navigate('/login')}
-            className="px-4 py-2 rounded-full bg-[#BDE038] text-black font-semibold text-sm hover:bg-[#a8c932] transition-colors"
-          >
-            Sign Up
-          </button>
+        <div className="flex gap-4 items-center">
+          {user ? (
+            <>
+              <span className="text-sm text-gray-400">
+                {userData?.email}
+              </span>
+              <button 
+                onClick={handleLogout}
+                className="px-4 py-2 rounded-full border border-red-500/50 text-red-400 hover:bg-red-500/10 transition-colors text-sm"
+              >
+                Logout
+              </button>
+            </>
+          ) : (
+            <>
+              <button 
+                onClick={() => navigate('/login')}
+                className="px-4 py-2 rounded-full border border-white/40 text-sm hover:border-white/60 transition-colors"
+              >
+                Login
+              </button>
+              <button 
+                onClick={() => navigate('/login')}
+                className="px-4 py-2 rounded-full bg-[#BDE038] text-black font-semibold text-sm hover:bg-[#a8c932] transition-colors"
+              >
+                Sign Up
+              </button>
+            </>
+          )}
         </div>
       </nav>
 
