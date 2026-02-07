@@ -18,10 +18,20 @@ interface Contact {
   secretsRevealed?: number;
 }
 
+interface User {
+  id: string;
+  email: string;
+  role: 'admin' | 'staff' | 'user';
+  name?: string;
+  createdAt?: string;
+}
+
 export default function AdminDashboard() {
   const [contacts, setContacts] = useState<Contact[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
-  const [stats, setStats] = useState({ total: 0, responded: 0, pending: 0 });
+  const [contactStats, setContactStats] = useState({ total: 0, responded: 0, pending: 0 });
+  const [userStats, setUserStats] = useState({ total: 0, admins: 0, staff: 0, regularUsers: 0 });
   const { userData, logout } = useAuth();
   const navigate = useNavigate();
 
@@ -30,31 +40,48 @@ export default function AdminDashboard() {
       navigate('/login');
       return;
     }
-    fetchContacts();
+    fetchData();
   }, [userData, navigate]);
 
-  const fetchContacts = async () => {
+  const fetchData = async () => {
     try {
-      const querySnapshot = await getDocs(collection(db, 'contacts'));
+      // Fetch contacts
+      const contactsSnapshot = await getDocs(collection(db, 'contacts'));
       const contactsData: Contact[] = [];
       
-      querySnapshot.forEach((doc) => {
+      contactsSnapshot.forEach((doc) => {
         contactsData.push({ id: doc.id, ...doc.data() } as Contact);
       });
 
       contactsData.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
-      
       setContacts(contactsData);
       
-      setStats({
+      setContactStats({
         total: contactsData.length,
         responded: contactsData.filter(c => c.responded).length,
         pending: contactsData.filter(c => !c.responded).length
       });
+
+      // Fetch users
+      const usersSnapshot = await getDocs(collection(db, 'users'));
+      const usersData: User[] = [];
+      
+      usersSnapshot.forEach((doc) => {
+        usersData.push({ id: doc.id, ...doc.data() } as User);
+      });
+
+      setUsers(usersData);
+      
+      setUserStats({
+        total: usersData.length,
+        admins: usersData.filter(u => u.role === 'admin').length,
+        staff: usersData.filter(u => u.role === 'staff').length,
+        regularUsers: usersData.filter(u => u.role === 'user').length
+      });
       
       setLoading(false);
     } catch (error) {
-      console.error('Error fetching contacts:', error);
+      console.error('Error fetching data:', error);
       setLoading(false);
     }
   };
@@ -89,27 +116,100 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      <div className='max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 mb-8'>
-        <div className='bg-[#121212] border border-white/20 rounded-xl p-6'>
-          <div className='text-4xl font-bold text-[#BDE038] mb-2'>{stats.total}</div>
-          <div className='text-gray-400'>Total Sign-ups</div>
-        </div>
-        
-        <div className='bg-[#121212] border border-green-500/20 rounded-xl p-6'>
-          <div className='text-4xl font-bold text-green-400 mb-2'>{stats.responded}</div>
-          <div className='text-gray-400'>Responded</div>
-        </div>
-        
-        <div className='bg-[#121212] border border-yellow-500/20 rounded-xl p-6'>
-          <div className='text-4xl font-bold text-yellow-400 mb-2'>{stats.pending}</div>
-          <div className='text-gray-400'>Pending</div>
+      {/* USER SIGN-UPS STATS */}
+      <div className='max-w-7xl mx-auto mb-8'>
+        <h2 className='text-xl font-semibold mb-4 text-[#BDE038]'>User Sign-ups</h2>
+        <div className='grid grid-cols-1 md:grid-cols-4 gap-6'>
+          <div className='bg-[#121212] border border-[#BDE038]/30 rounded-xl p-6'>
+            <div className='text-4xl font-bold text-[#BDE038] mb-2'>{userStats.total}</div>
+            <div className='text-gray-400'>Total Users</div>
+          </div>
+          
+          <div className='bg-[#121212] border border-purple-500/20 rounded-xl p-6'>
+            <div className='text-4xl font-bold text-purple-400 mb-2'>{userStats.admins}</div>
+            <div className='text-gray-400'>Admins</div>
+          </div>
+          
+          <div className='bg-[#121212] border border-blue-500/20 rounded-xl p-6'>
+            <div className='text-4xl font-bold text-blue-400 mb-2'>{userStats.staff}</div>
+            <div className='text-gray-400'>Staff</div>
+          </div>
+
+          <div className='bg-[#121212] border border-cyan-500/20 rounded-xl p-6'>
+            <div className='text-4xl font-bold text-cyan-400 mb-2'>{userStats.regularUsers}</div>
+            <div className='text-gray-400'>Regular Users</div>
+          </div>
         </div>
       </div>
 
+      {/* CONTACT FORM STATS */}
+      <div className='max-w-7xl mx-auto mb-8'>
+        <h2 className='text-xl font-semibold mb-4 text-[#BDE038]'>People Who Reached Out</h2>
+        <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
+          <div className='bg-[#121212] border border-white/20 rounded-xl p-6'>
+            <div className='text-4xl font-bold text-white mb-2'>{contactStats.total}</div>
+            <div className='text-gray-400'>Total Contacts</div>
+          </div>
+          
+          <div className='bg-[#121212] border border-green-500/20 rounded-xl p-6'>
+            <div className='text-4xl font-bold text-green-400 mb-2'>{contactStats.responded}</div>
+            <div className='text-gray-400'>Responded</div>
+          </div>
+          
+          <div className='bg-[#121212] border border-yellow-500/20 rounded-xl p-6'>
+            <div className='text-4xl font-bold text-yellow-400 mb-2'>{contactStats.pending}</div>
+            <div className='text-gray-400'>Pending</div>
+          </div>
+        </div>
+      </div>
+
+      {/* USERS TABLE */}
+      <div className='max-w-7xl mx-auto mb-8'>
+        <div className='bg-[#121212] border border-white/20 rounded-xl overflow-hidden'>
+          <div className='p-6 border-b border-white/10'>
+            <h2 className='text-xl font-semibold'>Registered Users</h2>
+          </div>
+          
+          <div className='overflow-x-auto'>
+            <table className='w-full'>
+              <thead className='bg-white/5'>
+                <tr>
+                  <th className='px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase'>Name</th>
+                  <th className='px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase'>Email</th>
+                  <th className='px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase'>Role</th>
+                  <th className='px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase'>User ID</th>
+                </tr>
+              </thead>
+              <tbody className='divide-y divide-white/10'>
+                {users.map((user) => (
+                  <tr key={user.id} className='hover:bg-white/5'>
+                    <td className='px-6 py-4 text-sm'>{user.name || 'N/A'}</td>
+                    <td className='px-6 py-4 text-sm text-gray-400'>{user.email}</td>
+                    <td className='px-6 py-4'>
+                      <span className={`px-2 py-1 rounded-full text-xs ${
+                        user.role === 'admin' 
+                          ? 'bg-purple-500/20 text-purple-400' 
+                          : user.role === 'staff'
+                          ? 'bg-blue-500/20 text-blue-400'
+                          : 'bg-cyan-500/20 text-cyan-400'
+                      }`}>
+                        {user.role}
+                      </span>
+                    </td>
+                    <td className='px-6 py-4 text-sm text-gray-400 font-mono text-xs'>{user.id}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      {/* CONTACTS TABLE */}
       <div className='max-w-7xl mx-auto'>
         <div className='bg-[#121212] border border-white/20 rounded-xl overflow-hidden'>
           <div className='p-6 border-b border-white/10'>
-            <h2 className='text-xl font-semibold'>All Contacts</h2>
+            <h2 className='text-xl font-semibold'>Contact Form Submissions</h2>
           </div>
           
           <div className='overflow-x-auto'>
