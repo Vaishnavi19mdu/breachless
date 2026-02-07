@@ -54,6 +54,8 @@ function DashboardRouter() {
   const { userData } = useAuth();
   const [showWelcome, setShowWelcome] = useState(true);
 
+  console.log('DashboardRouter - Current user role:', userData?.role); // DEBUG
+
   // Regular users go to homepage, not dashboard
   if (userData?.role === 'user') {
     return <Navigate to='/' replace />;
@@ -77,13 +79,25 @@ function DashboardRouter() {
     );
   }
 
+  // If userData doesn't exist or role is undefined, redirect to login
   return <Navigate to='/login' replace />;
 }
 
 function HomePage() {
   const navigate = useNavigate();
-  const { userData } = useAuth();
-  const [showWelcome, setShowWelcome] = useState(!!userData);
+  const { userData, user } = useAuth();
+  const [showWelcome, setShowWelcome] = useState(false);
+
+  // Auto-redirect admin/staff to dashboard
+  useEffect(() => {
+    if (user && userData) {
+      if (userData.role === 'admin' || userData.role === 'staff') {
+        navigate('/dashboard');
+      } else if (userData.role === 'user') {
+        setShowWelcome(true);
+      }
+    }
+  }, [user, userData, navigate]);
 
   return (
     <>
@@ -93,13 +107,39 @@ function HomePage() {
   );
 }
 
+function LoginWrapper() {
+  const { user, userData, loading } = useAuth();
+  const navigate = useNavigate();
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (!loading && user && userData) {
+      if (userData.role === 'admin' || userData.role === 'staff') {
+        navigate('/dashboard');
+      } else {
+        navigate('/');
+      }
+    }
+  }, [user, userData, loading, navigate]);
+
+  if (loading) {
+    return (
+      <div className='min-h-screen bg-black flex items-center justify-center'>
+        <div className='text-[#BDE038] text-xl'>Loading…</div>
+      </div>
+    );
+  }
+
+  return <Login />;
+}
+
 export default function AppRouter() {
   return (
     <BrowserRouter>
       <AuthProvider>
         <Routes>
           <Route path='/' element={<HomePage />} />
-          <Route path='/login' element={<Login />} />
+          <Route path='/login' element={<LoginWrapper />} />
           
           <Route
             path='/analyze'

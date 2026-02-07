@@ -1,11 +1,12 @@
-{
+﻿{
   "name": "breachless",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && cp public/_redirects dist/_redirects",
+    "build:win": "vite build && copy public\\_redirects dist\\_redirects",
     "preview": "vite preview"
   },
   "dependencies": {
