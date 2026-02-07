@@ -1,147 +1,170 @@
-🔐 Breachless — Secret Exposure Analyzer
+﻿# 🔐 Breachless — Secret Exposure Analyzer
+
 <div align="center">
 
-Awareness before compromise.
+**Awareness before compromise.**
 
 A modern web application that detects hardcoded secrets in your code before they leak to production.
 
 [Live Demo](https://breachless.onrender.com/) | [Features](#features) | [Getting Started](#getting-started)
 
 </div>
-🚀 What is Breachless?
+
+---
+
+## 🚀 What is Breachless?
 
 Breachless is a secret detection tool that helps developers identify exposed credentials, API keys, and sensitive data in their code before committing to version control.
 
 Paste your code or configuration files and get instant feedback on potential security vulnerabilities.
 
-✨ Features
-🔎 Comprehensive Secret Detection
+---
+
+## ✨ Features
+
+### 🔎 Comprehensive Secret Detection
 
 Detects 14+ types of secrets, including:
+- AWS Access & Secret Keys
+- GitHub Personal Access Tokens
+- Stripe API Keys
+- Database Connection Strings
+- JWT Tokens
+- Private Cryptographic Keys
+- And more...
 
-AWS Access & Secret Keys
+### ⚠️ Risk Analysis
+- Real-time scanning with severity levels (Critical, High, Medium, Low)
+- Line-by-line detection with masked previews
+- Overall risk assessment
 
-GitHub Personal Access Tokens
+### 📘 Educational Guidance
+- Plain-English explanations of what each secret does
+- Step-by-step remediation instructions
+- Links to security best practices
+- Guidance on using environment variables correctly
 
-Stripe API Keys
-
-<<<<<<< HEAD
-### Authentication System
+### 🔐 Authentication System
 - User registration and login
 - Role-based access (Admin, Staff, User)
 - Firebase Authentication integration
 - Secure dashboard access
 
-### Admin Dashboard
+### 📊 Admin Dashboard
 - View all contact form submissions
-- Track user analytics and usage statistics
+- Track user sign-ups and analytics
 - Monitor secrets revealed count
 - Manage response status
+- User role management
 
-### Modern UI
+### 🎨 Modern UI
 - Clean, dark-themed interface
-- Animated 3D graphics with Three.js
-- Responsive design
+- Animated 3D blob visualization
+- Fully responsive design
 - Smooth transitions and effects
-=======
-Database Connection Strings
->>>>>>> 4dad294388885aa335b125b270155a687692e967
 
-JWT Tokens
+---
 
-<<<<<<< HEAD
+## 🛠️ Getting Started
+
 ### Prerequisites
-- Node.js (v16 or higher)
+- Node.js v16 or higher
 - npm or yarn
 - Firebase account (for authentication)
-=======
-Private Cryptographic Keys
->>>>>>> 4dad294388885aa335b125b270155a687692e967
 
-And more...
+### Installation
 
-<<<<<<< HEAD
-1. Clone the repository
-```bash
-git clone https://github.com/Vaishnavi19mdu/breachless.git
-cd breachless
-```
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/Vaishnavi19mdu/breachless.git
+   cd breachless
+   ```
 
-2. Install dependencies
-```bash
-npm install
-```
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
 
-3. Set up Firebase
-```bash
-# Create .env.local file with your Firebase config
-VITE_FIREBASE_API_KEY=your_api_key
-VITE_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
-VITE_FIREBASE_PROJECT_ID=your_project_id
-VITE_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
-VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
-VITE_FIREBASE_APP_ID=your_app_id
-```
+3. **Set up Firebase**
+   
+   Create a `.env.local` file with your Firebase configuration:
+   ```env
+   VITE_FIREBASE_API_KEY=your_api_key
+   VITE_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+   VITE_FIREBASE_PROJECT_ID=your_project_id
+   VITE_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
+   VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+   VITE_FIREBASE_APP_ID=your_app_id
+   ```
 
-4. Run the development server
-```bash
-npm run dev
-```
+4. **Run the development server**
+   ```bash
+   npm run dev
+   ```
 
-5. Open your browser and navigate to http://localhost:3000
-=======
-⚠️ Risk Analysis
+5. **Open your browser**
+   
+   Navigate to `http://localhost:3000`
 
-Real-time scanning with severity levels (Critical, High, Medium, Low)
+---
 
-Line-by-line detection with masked previews
+## 🧪 How to Use
 
-Overall risk assessment
->>>>>>> 4dad294388885aa335b125b270155a687692e967
-
-📘 Educational Guidance
-
-Plain-English explanations of what each secret does
-
-Step-by-step remediation instructions
-
-<<<<<<< HEAD
 ### For Regular Users
 1. **Sign Up** - Create an account with email and password
 2. **Navigate to Analyzer** - Click "Analyze Exposure" button
-3. **Paste Your Code** - Copy code from .env files or scripts
-4. **Run Analysis** - Click "Analyze Code"
-5. **Review Results** - See detected secrets with remediation guides
+3. **Paste Your Code** - Copy code from .env files, config files, or scripts
+4. **Run Analysis** - Click "Analyze Code" and wait 1-2 seconds
+5. **Review Results** - See detected secrets with severity levels and remediation guides
 
 ### For Admin/Staff
-1. **Login** - Use your credentials
-2. **Access Dashboard** - View contact submissions and analytics
-3. **Manage Queries** - Respond to user queries
-4. **Monitor Usage** - Track secrets revealed and user activity
-=======
-Links to security best practices
->>>>>>> 4dad294388885aa335b125b270155a687692e967
+1. **Login** - Use your admin/staff credentials
+2. **Access Dashboard** - Automatically redirected to dashboard
+3. **View Analytics** - See user sign-ups and contact submissions
+4. **Manage Queries** - Respond to user contact form submissions
+5. **Monitor Activity** - Track usage statistics and secrets revealed
 
-Guidance on using environment variables correctly
+---
 
-<<<<<<< HEAD
+## 📁 Project Structure
+
+```
+breachless/
+├── public/
+│   └── _redirects          # Routing config for deployment
+├── src/
+│   ├── analyze/            # Secret detection logic
+│   ├── auth/               # Login/signup components
+│   ├── context/            # Auth context
+│   ├── dashboards/         # Admin & Staff dashboards
+│   ├── firebase/           # Firebase configuration
+│   ├── components/         # Reusable components
+│   ├── App.tsx             # Main app component
+│   └── Router.tsx          # Route configuration
+├── index.html
+├── package.json
+└── vite.config.ts
+```
+
+---
+
+## 🧰 Tech Stack
+
 - **Frontend**: React 19 + TypeScript
 - **Styling**: Tailwind CSS
 - **3D Graphics**: Three.js
 - **Authentication**: Firebase Auth
 - **Database**: Firebase Firestore
-- **Routing**: React Router v6
+- **Routing**: React Router v7
 - **Build Tool**: Vite
 - **Deployment**: Render
-=======
-🎨 Modern UI
->>>>>>> 4dad294388885aa335b125b270155a687692e967
 
-Clean, dark-themed interface
+---
 
-Animated 3D blob visualization
+## 👨‍💻 Development
 
-<<<<<<< HEAD
+### Available Scripts
+
 - `npm run dev` - Start development server
 - `npm run build` - Build for production
 - `npm run preview` - Preview production build
@@ -150,152 +173,98 @@ Animated 3D blob visualization
 
 - **User**: Can use the secret analyzer tool
 - **Staff**: Can view and respond to contact queries
-- **Admin**: Full access to analytics and user management
+- **Admin**: Full access to analytics, user management, and contact queries
 
-To promote a user to admin:
-1. Go to Firebase Console → Firestore
-2. Find the user document in `users` collection
-3. Change `role` field from `staff` to `admin`
+### Promoting Users to Admin/Staff
 
-## Deployment
+1. Go to Firebase Console → Firestore Database
+2. Navigate to the `users` collection
+3. Find the user document (by UID)
+4. Update the `role` field:
+   - `"user"` - Regular user
+   - `"staff"` - Staff member
+   - `"admin"` - Administrator
 
-The app is deployed on Render.
+### Adding New Secret Patterns
 
-Live at: https://breachless.onrender.com/
-=======
-Fully responsive design
+Edit `src/analyze/SecretDetector.ts` and add to the `SECRET_PATTERNS` array:
 
-Smooth transitions and effects
+```typescript
+{
+  name: 'Your Secret Type',
+  pattern: /your-regex-pattern/g,
+  severity: 'critical',
+  description: 'What this secret does',
+  remediation: 'How to fix it'
+}
+```
 
-🛠️ Getting Started
-Prerequisites
->>>>>>> 4dad294388885aa335b125b270155a687692e967
+---
 
-Node.js v16 or higher
+## 🚀 Deployment
 
-npm or yarn
+The app is deployed on **Render**.
 
-<<<<<<< HEAD
+**Live URL**: [https://breachless.onrender.com/](https://breachless.onrender.com/)
+
+### Deploy Your Own
+
+1. Fork this repository
+2. Sign up at [render.com](https://render.com)
+3. Create a new **Static Site**
+4. Connect your GitHub repository
+5. Configure:
+   - **Build Command**: `npm install && npm run build`
+   - **Publish Directory**: `dist`
+6. Add environment variables (Firebase config)
+7. Deploy!
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
 1. Fork the repository
 2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
 3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-## License
-=======
-Installation
+---
 
-Clone the repository
-
-git clone https://github.com/Vaishnavi19mdu/breachless.git
-cd breachless
-
-
-Install dependencies
-
-npm install
-
-
-Run the development server
-
-npm run dev
-
-
-Open your browser
-
-http://localhost:3000
-
-📁 Project Structure
-
-🧪 How to Use
-
-Navigate to the Analyzer
-Click the “Analyze Exposure” button on the homepage
-
-Paste Your Code
-Copy code from .env files, config files, or scripts
-
-Run Analysis
-Click “Analyze Code” and wait 1–2 seconds
-
-Review Results
-View detected secrets with severity levels and remediation guides
-
-🧰 Tech Stack
-
-Frontend: React + TypeScript
-
-Styling: Tailwind CSS
-
-3D Graphics: Three.js
-
-Build Tool: Vite
-
-👨‍💻 Development
-Available Scripts
-
-npm run dev — Start development server
-
-npm run build — Build for production
-
-npm run preview — Preview production build
-
-Adding New Secret Patterns
-
-Edit the following file and extend the SECRET_PATTERNS array:
-
-src/analyze/SecretDetector.ts
-
-🤝 Contributing
-
-Contributions are welcome!
-Feel free to open an issue or submit a Pull Request.
-
-📄 License
->>>>>>> 4dad294388885aa335b125b270155a687692e967
+## 📄 License
 
 This project is licensed under the MIT License.
 
-🔒 Security Note
+---
 
-This tool performs client-side analysis only.
-Your code never leaves your browser.
+## 🔒 Security Note
 
-<<<<<<< HEAD
-- Use environment variables (.env files)
-- Add .env to .gitignore
+⚠️ **This tool performs client-side analysis only.** Your code never leaves your browser.
+
+### Best Practices:
+- Use environment variables (`.env` files)
+- Add `.env` to `.gitignore`
 - Rotate compromised credentials immediately
-- Use secret management tools (AWS Secrets Manager, HashiCorp Vault)
+- Use secret management tools (AWS Secrets Manager, HashiCorp Vault, etc.)
 - Enable Firebase Security Rules to protect your database
+- Never commit secrets to version control
 
-## Acknowledgments
+---
+
+## 🙏 Acknowledgments
 
 - Built with React and Firebase
 - UI inspired by modern security tools
 - Secret detection patterns based on industry standards
-=======
-Best practices:
->>>>>>> 4dad294388885aa335b125b270155a687692e967
 
-Use environment variables (.env files)
-
-Add .env to .gitignore
-
-Rotate compromised credentials immediately
-
-Use dedicated secret management tools
+---
 
 <div align="center">
 
-<<<<<<< HEAD
 Made with 🛡️ by the Breachless Team
 
-[Report Bug](https://github.com/Vaishnavi19mdu/breachless/issues) • [Request Feature](https://github.com/Vaishnavi19mdu/breachless/issues)
+[Report Bug](https://github.com/Vaishnavi19mdu/breachless/issues) · [Request Feature](https://github.com/Vaishnavi19mdu/breachless/issues)
 
 </div>
-=======
-Made with care ❤️ by the Breachless Team
-
-</div>
->>>>>>> 4dad294388885aa335b125b270155a687692e967
