@@ -1,10 +1,12 @@
 ﻿import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Logo from "./Logo";
 import SecurityVisual from "./SecurityVisual";
 import ContactForm from "./components/ContactForm";
 
 export default function App({ onNavigateToAnalyze }: { onNavigateToAnalyze?: () => void }) {
   const [input, setInput] = useState("");
+  const navigate = useNavigate();
 
   return (
     <div className="bg-black text-white min-h-screen">
@@ -20,13 +22,13 @@ export default function App({ onNavigateToAnalyze }: { onNavigateToAnalyze?: () 
         <Logo />
         <div className="flex gap-4">
           <button 
-            onClick={() => window.location.href = '/login'}
+            onClick={() => navigate('/login')}
             className="px-4 py-2 rounded-full border border-white/40 text-sm hover:border-white/60 transition-colors"
           >
             Login
           </button>
           <button 
-            onClick={() => window.location.href = '/login'}
+            onClick={() => navigate('/login')}
             className="px-4 py-2 rounded-full bg-[#BDE038] text-black font-semibold text-sm hover:bg-[#a8c932] transition-colors"
           >
             Sign Up
