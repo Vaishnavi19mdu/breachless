@@ -1,126 +1,160 @@
-﻿# Breachless - Secret Exposure Analyzer
-
+🔐 Breachless — Secret Exposure Analyzer
 <div align="center">
-  
-**Awareness before compromise.**
+
+Awareness before compromise.
 
 A modern web application that detects hardcoded secrets in your code before they leak to production.
 
 </div>
+🚀 What is Breachless?
 
----
+Breachless is a secret detection tool that helps developers identify exposed credentials, API keys, and sensitive data in their code before committing to version control.
 
-## What is Breachless?
+Paste your code or configuration files and get instant feedback on potential security vulnerabilities.
 
-Breachless is a secret detection tool that helps developers identify exposed credentials, API keys, and sensitive data in their code before committing to version control. Paste your code or configuration files and get instant feedback on potential security vulnerabilities.
+✨ Features
+🔎 Comprehensive Secret Detection
 
-## Features
+Detects 14+ types of secrets, including:
 
-### Comprehensive Secret Detection
-Detects 14+ types of secrets including:
-- AWS Access & Secret Keys
-- GitHub Personal Access Tokens
-- Stripe API Keys
-- Database Connection Strings
-- JWT Tokens
-- Private Cryptographic Keys
-- And more...
+AWS Access & Secret Keys
 
-### Risk Analysis
-- Real-time scanning with severity levels (Critical, High, Medium, Low)
-- Line-by-line detection with masked previews
-- Overall risk assessment
+GitHub Personal Access Tokens
 
-### Educational Guidance
-- Plain-English explanations of what each secret does
-- Step-by-step remediation instructions
-- Links to security best practices
-- How to use environment variables properly
+Stripe API Keys
 
-### Modern UI
-- Clean, dark-themed interface
-- Animated 3D blob visualization
-- Responsive design
-- Smooth transitions and effects
+Database Connection Strings
 
-## Getting Started
+JWT Tokens
 
-### Prerequisites
-- Node.js (v16 or higher)
-- npm or yarn
+Private Cryptographic Keys
 
-### Installation
+And more...
 
-1. Clone the repository
-   bash
-   git clone https://github.com/Vaishnavi19mdu/breachless.git
-   cd breachless
-   
+⚠️ Risk Analysis
 
-2. Install dependencies
-   bash
-   npm install
-   
+Real-time scanning with severity levels (Critical, High, Medium, Low)
 
-3. Run the development server
-   bash
-   npm run dev
-   
+Line-by-line detection with masked previews
 
-4. Open your browser and navigate to \http://localhost:3000\
+Overall risk assessment
 
-## Project Structure
+📘 Educational Guidance
 
-![Folder Structure](./assets/abcd.png)
+Plain-English explanations of what each secret does
 
-## How to Use
+Step-by-step remediation instructions
 
-1. **Navigate to the Analyzer** - Click the "Analyze Exposure" button on the homepage
-2. **Paste Your Code** - Copy code from your .env files, config files, or scripts
-3. **Run Analysis** - Click "Analyze Code" and wait 1-2 seconds
-4. **Review Results** - See detected secrets with severity levels and remediation guides
+Links to security best practices
 
-## Tech Stack
+Guidance on using environment variables correctly
 
-- **Frontend**: React + TypeScript
-- **Styling**: Tailwind CSS
-- **3D Graphics**: Three.js
-- **Build Tool**: Vite
+🎨 Modern UI
 
-## Development
+Clean, dark-themed interface
 
-### Available Scripts
+Animated 3D blob visualization
 
-- \
-pm run dev\ - Start development server
-- \
-pm run build\ - Build for production
-- \
-pm run preview\ - Preview production build
+Fully responsive design
 
-### Adding New Secret Patterns
+Smooth transitions and effects
 
-Edit \src/analyze/SecretDetector.ts\ and add to the \SECRET_PATTERNS\ array.
+🛠️ Getting Started
+Prerequisites
 
-## Contributing
+Node.js v16 or higher
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+npm or yarn
 
-## License
+Installation
+
+Clone the repository
+
+git clone https://github.com/Vaishnavi19mdu/breachless.git
+cd breachless
+
+
+Install dependencies
+
+npm install
+
+
+Run the development server
+
+npm run dev
+
+
+Open your browser
+
+http://localhost:3000
+
+📁 Project Structure
+
+🧪 How to Use
+
+Navigate to the Analyzer
+Click the “Analyze Exposure” button on the homepage
+
+Paste Your Code
+Copy code from .env files, config files, or scripts
+
+Run Analysis
+Click “Analyze Code” and wait 1–2 seconds
+
+Review Results
+View detected secrets with severity levels and remediation guides
+
+🧰 Tech Stack
+
+Frontend: React + TypeScript
+
+Styling: Tailwind CSS
+
+3D Graphics: Three.js
+
+Build Tool: Vite
+
+👨‍💻 Development
+Available Scripts
+
+npm run dev — Start development server
+
+npm run build — Build for production
+
+npm run preview — Preview production build
+
+Adding New Secret Patterns
+
+Edit the following file and extend the SECRET_PATTERNS array:
+
+src/analyze/SecretDetector.ts
+
+🤝 Contributing
+
+Contributions are welcome!
+Feel free to open an issue or submit a Pull Request.
+
+📄 License
 
 This project is licensed under the MIT License.
 
-## Security Note
+🔒 Security Note
 
-This tool performs **client-side analysis only**. Your code never leaves your browser. However, always practice proper secret management:
+This tool performs client-side analysis only.
+Your code never leaves your browser.
 
-- Use environment variables (.env files)
-- Add .env to .gitignore
-- Rotate compromised credentials immediately
-- Use secret management tools
+Best practices:
 
----
+Use environment variables (.env files)
+
+Add .env to .gitignore
+
+Rotate compromised credentials immediately
+
+Use dedicated secret management tools
 
 <div align="center">
-Made with care by the Breachless Team
+
+Made with care ❤️ by the Breachless Team
+
 </div>
