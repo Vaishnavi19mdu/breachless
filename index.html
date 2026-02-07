@@ -1,30 +1,10 @@
-
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Breachless | Awareness before compromise</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              black: '#000000',
-              deepTeal: '#10454F',
-              mutedBlueGrey: '#506266',
-              oliveGrey: '#818274',
-              softLime: '#BDE038'
-            },
-            fontFamily: {
-              sans: ['Inter', 'system-ui', 'sans-serif'],
-              mono: ['JetBrains Mono', 'Menlo', 'monospace']
-            }
-          }
-        }
-      }
-    </script>
     <style>
       @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap');
       body {
@@ -51,22 +31,18 @@
       ::-webkit-scrollbar-thumb:hover {
         background: #BDE038;
       }
-    </style>
-    <script type="importmap">
-{
-  "imports": {
-    "react": "https://esm.sh/react@18.2.0",
-    "react-dom": "https://esm.sh/react-dom@18.2.0",
-    "three": "https://esm.sh/three@0.160.0",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
-    "react/": "https://esm.sh/react@^19.2.4/"
-  }
+      # Just add this line to your existing index.html styles
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
-</script>
-  <link rel="stylesheet" href="/index.css">
-</head>
+.animate-fade-in {
+  animation: fade-in 0.3s ease-out;
+}
+    </style>
+  </head>
   <body>
     <div id="root"></div>
-  <script type="module" src="/index.tsx"></script>
-</body>
+    <script type="module" src="/index.tsx"></script>
+  </body>
 </html>

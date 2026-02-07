@@ -1,15 +1,9 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import Router from './Router';
+﻿import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+import AppRouter from './Router';
 
-const rootElement = document.getElementById('root');
-if (!rootElement) {
-  throw new Error("Could not find root element to mount to");
-}
-
-const root = ReactDOM.createRoot(rootElement);
-root.render(
-  <React.StrictMode>
-    <Router />
-  </React.StrictMode>
+createRoot(document.getElementById('root')!).render(
+  <StrictMode>
+    <AppRouter />
+  </StrictMode>
 );

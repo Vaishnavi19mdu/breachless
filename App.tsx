@@ -1,22 +1,17 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import Logo from "./Logo";
 import SecurityVisual from "./SecurityVisual";
+import ContactForm from "./components/ContactForm";
 
 export default function App({ onNavigateToAnalyze }: { onNavigateToAnalyze?: () => void }) {
   const [input, setInput] = useState("");
 
   return (
     <div className="bg-black text-white min-h-screen">
-      {/* GLOBAL ANIMATIONS */}
-      <style jsx global>{`
+      <style>{`
         @keyframes shine {
           0% { background-position: 0% 50%; }
           100% { background-position: 200% 50%; }
-        }
-
-        @keyframes float {
-          0% { transform: translateY(0); }
-          100% { transform: translateY(-6px); }
         }
       `}</style>
 
@@ -24,10 +19,16 @@ export default function App({ onNavigateToAnalyze }: { onNavigateToAnalyze?: () 
       <nav className="flex justify-between items-center px-10 py-6">
         <Logo />
         <div className="flex gap-4">
-          <button className="px-4 py-2 rounded-full border border-white/40 text-sm hover:border-white/60 transition-colors">
+          <button 
+            onClick={() => window.location.href = '/login'}
+            className="px-4 py-2 rounded-full border border-white/40 text-sm hover:border-white/60 transition-colors"
+          >
             Login
           </button>
-          <button className="px-4 py-2 rounded-full bg-[#BDE038] text-black font-semibold text-sm hover:bg-[#a8c932] transition-colors">
+          <button 
+            onClick={() => window.location.href = '/login'}
+            className="px-4 py-2 rounded-full bg-[#BDE038] text-black font-semibold text-sm hover:bg-[#a8c932] transition-colors"
+          >
             Sign Up
           </button>
         </div>
@@ -38,16 +39,7 @@ export default function App({ onNavigateToAnalyze }: { onNavigateToAnalyze?: () 
         <SecurityVisual />
 
         <div className="max-w-3xl space-y-6 z-10 ml-[-24%]">
-          {/* BREACHLESS – 30% bigger */}
-          <span
-            className="
-              text-lg tracking-widest uppercase font-semibold
-              bg-gradient-to-r from-[#BDE038] via-white to-[#BDE038]
-              bg-[length:200%_100%] bg-clip-text text-transparent
-              animate-[shine_3s_linear_infinite]
-              drop-shadow-[0_0_12px_rgba(189,224,56,0.35)]
-            "
-          >
+          <span className="text-lg tracking-widest uppercase font-semibold bg-gradient-to-r from-[#BDE038] via-white to-[#BDE038] bg-[length:200%_100%] bg-clip-text text-transparent animate-[shine_3s_linear_infinite] drop-shadow-[0_0_12px_rgba(189,224,56,0.35)]">
             Breachless
           </span>
 
@@ -56,9 +48,7 @@ export default function App({ onNavigateToAnalyze }: { onNavigateToAnalyze?: () 
           </h1>
 
           <p className="text-lg text-gray-300 leading-relaxed max-w-2xl">
-            Exposed secrets are the #1 entry point for attackers. Paste your
-            code or <code className="bg-white/10 px-1.5 py-0.5 rounded">.env</code>{" "}
-            file below to simulate exposure analysis.
+            Exposed secrets are the #1 entry point for attackers. Paste your code or <code className="bg-white/10 px-1.5 py-0.5 rounded">.env</code> file below to simulate exposure analysis.
           </p>
 
           <textarea
@@ -117,22 +107,11 @@ STRIPE_SECRET_KEY=...`}
           ].map(({ title, desc, extraLine, icon, color, accent }) => (
             <div
               key={title}
-              className="
-                relative bg-[#121212] border border-white/25 rounded-2xl p-6
-                transition-all duration-500 group overflow-hidden
-                hover:-translate-y-2 hover:shadow-xl
-              "
-              style={{
-                boxShadow: `0 0 0 rgba(0,0,0,0)`,
-              }}
+              className="relative bg-[#121212] border border-white/25 rounded-2xl p-6 transition-all duration-500 group overflow-hidden hover:-translate-y-2 hover:shadow-xl"
             >
-              {/* glow */}
-              <div
-                className={`absolute inset-0 bg-gradient-to-br ${color} opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
-              />
+              <div className={`absolute inset-0 bg-gradient-to-br ${color} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
 
               <div className="relative z-10">
-                {/* icon animation */}
                 <div className="text-[2.65rem] mb-4 transition-transform duration-500 group-hover:scale-110 group-hover:-rotate-3">
                   {icon}
                 </div>
@@ -145,7 +124,6 @@ STRIPE_SECRET_KEY=...`}
                 <p className="text-[0.82rem] text-gray-500">{extraLine}</p>
               </div>
 
-              {/* bottom accent */}
               <div
                 className="absolute bottom-0 left-0 h-1 w-0 group-hover:w-full transition-all duration-500"
                 style={{ backgroundColor: accent }}
@@ -155,32 +133,8 @@ STRIPE_SECRET_KEY=...`}
         </div>
       </section>
 
-      {/* CONTACT */}
-      <section className="py-16 bg-[#0e0e0e] flex justify-center">
-        <div className="w-full max-w-2xl px-10">
-          <h2 className="text-2xl font-bold mb-6 text-center">Contact Us</h2>
-
-          <form className="grid grid-cols-1 gap-4">
-            <input className="p-3 rounded-lg bg-black border border-white/30 text-sm focus:border-[#BDE038] focus:outline-none" placeholder="Name" />
-            <input className="p-3 rounded-lg bg-black border border-white/30 text-sm focus:border-[#BDE038] focus:outline-none" placeholder="Phone" />
-            <input className="p-3 rounded-lg bg-black border border-white/30 text-sm focus:border-[#BDE038] focus:outline-none" placeholder="Email" />
-            <input className="p-3 rounded-lg bg-black border border-white/30 text-sm focus:border-[#BDE038] focus:outline-none" placeholder="GitHub Link" />
-
-            <select className="p-3 rounded-lg bg-black border border-white/30 text-sm focus:border-[#BDE038] focus:outline-none cursor-pointer">
-              <option>User Flair</option>
-              <option>Bug Hunter</option>
-              <option>Security Nerd</option>
-              <option>Ship Fast</option>
-              <option>Hackathon Goblin</option>
-              <option>Paranoid but Right</option>
-            </select>
-
-            <button className="mt-3 py-3 rounded-full bg-[#BDE038] text-black text-sm font-semibold hover:bg-[#a8c932] transition-colors">
-              Submit
-            </button>
-          </form>
-        </div>
-      </section>
+      {/* CONTACT FORM */}
+      <ContactForm />
     </div>
   );
 }
