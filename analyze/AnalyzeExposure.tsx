@@ -1,32 +1,82 @@
-import { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { SecretDetector } from './SecretDetector';
-import { AnalysisResult, DetectedSecret } from './types';
+import type { AnalysisResult } from './types';
 
 export default function AnalyzeExposure() {
-  const [input, setInput] = useState('');
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [code, setCode] = useState('');
   const [result, setResult] = useState<AnalysisResult | null>(null);
+  const [analyzing, setAnalyzing] = useState(false);
+  const [uploadMode, setUploadMode] = useState<'text' | 'files' | 'folder'>('text');
+  const [fileResults, setFileResults] = useState<{fileName: string; result: AnalysisResult}[]>([]);
 
-  const handleAnalyze = () => {
-    if (!input.trim()) return;
-
-    setIsAnalyzing(true);
-
-    // Simulate network delay for realistic UX
+  const analyzeCode = () => {
+    setAnalyzing(true);
     setTimeout(() => {
-      const analysis = SecretDetector.analyzeCode(input);
-      setResult(analysis);
-      setIsAnalyzing(false);
+      const analysisResult = SecretDetector.analyzeCode(code);
+      setResult(analysisResult);
+      setAnalyzing(false);
     }, 1500);
+  };
+
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (!files || files.length === 0) return;
+
+    setAnalyzing(true);
+    const results: {fileName: string; result: AnalysisResult}[] = [];
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      const text = await file.text();
+      const analysisResult = SecretDetector.analyzeCode(text);
+      
+      if (analysisResult.foundSecrets.length > 0) {
+        results.push({ fileName: file.name, result: analysisResult });
+      }
+    }
+
+    setFileResults(results);
+    setAnalyzing(false);
+  };
+
+  const handleFolderUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (!files || files.length === 0) return;
+
+    setAnalyzing(true);
+    const results: {fileName: string; result: AnalysisResult}[] = [];
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      
+      // Skip non-text files
+      if (!file.type.includes('text') && !file.name.match(/\.(js|ts|tsx|jsx|py|env|json|yml|yaml|xml|md|txt)$/i)) {
+        continue;
+      }
+
+      try {
+        const text = await file.text();
+        const analysisResult = SecretDetector.analyzeCode(text);
+        
+        if (analysisResult.foundSecrets.length > 0) {
+          results.push({ fileName: file.webkitRelativePath || file.name, result: analysisResult });
+        }
+      } catch (error) {
+        console.error(`Error reading file ${file.name}:`, error);
+      }
+    }
+
+    setFileResults(results);
+    setAnalyzing(false);
   };
 
   const getRiskColor = (level: string) => {
     switch (level) {
-      case 'critical': return 'text-red-500 border-red-500 bg-red-500/10';
-      case 'high': return 'text-orange-500 border-orange-500 bg-orange-500/10';
-      case 'medium': return 'text-yellow-500 border-yellow-500 bg-yellow-500/10';
-      case 'low': return 'text-blue-500 border-blue-500 bg-blue-500/10';
-      default: return 'text-green-500 border-green-500 bg-green-500/10';
+      case 'critical': return 'bg-red-500/20 border-red-500/50 text-red-400';
+      case 'high': return 'bg-orange-500/20 border-orange-500/50 text-orange-400';
+      case 'medium': return 'bg-yellow-500/20 border-yellow-500/50 text-yellow-400';
+      case 'low': return 'bg-blue-500/20 border-blue-500/50 text-blue-400';
+      default: return 'bg-green-500/20 border-green-500/50 text-green-400';
     }
   };
 
@@ -35,282 +85,263 @@ export default function AnalyzeExposure() {
       case 'critical': return '🔴';
       case 'high': return '🟠';
       case 'medium': return '🟡';
-      default: return '🔵';
+      case 'low': return '🔵';
+      default: return '⚪';
     }
   };
 
-  const getSecretExplanation = (type: string) => {
+  const getSecretExplanation = (type: string): string => {
     const explanations: Record<string, string> = {
-      'AWS Access Key': 'A key that gives access to your Amazon Web Services account. Anyone with this can use your AWS resources and rack up charges.',
-      'AWS Secret Key': 'The password for your AWS account. With this, attackers can access your cloud servers, databases, and files.',
-      'GitHub Token': 'A password that gives full access to your GitHub account and all your code repositories.',
-      'Stripe Secret Key': 'The key to your Stripe payment processing account. Attackers could steal money or customer payment information.',
-      'Google API Key': 'Access to Google services tied to your account. Could be used to make unauthorized API calls at your expense.',
-      'Database URL': 'The address and password to your database. Attackers can read, modify, or delete all your data.',
-      'Private Key': 'A cryptographic key used for secure connections. Anyone with this can impersonate you or decrypt your communications.',
-      'JWT Token': 'A token that proves who you are to a server. Attackers can use this to access your account without a password.',
-      'API Key Generic': 'A key to access an API service. Could let attackers use the service pretending to be you.',
-      'Password in Code': 'A hardcoded password. Never put passwords directly in code - they should be stored securely.',
-      'OAuth Token': 'An access token for OAuth authentication. Allows access to your account or services.',
-      'Slack Token': 'Access to your Slack workspace. Attackers could read messages or post as you.',
-      'SendGrid API Key': 'Access to your SendGrid email service. Could be used to send spam emails from your account.',
-      'Twilio API Key': 'Access to your Twilio phone/SMS service. Could rack up charges by making calls or sending messages.'
+      'AWS Access Key': 'This is like a username for Amazon Web Services. Anyone with this can access your AWS account and resources.',
+      'AWS Secret Key': 'This is like a password for AWS. Combined with an Access Key, it gives full access to your AWS account.',
+      'GitHub Token': 'This token allows access to your GitHub repositories. Someone could read, modify, or delete your code.',
+      'Stripe Secret Key': 'This key can process payments and access customer data in your Stripe account.',
+      'Google API Key': 'This key is used to access Google services. It could result in unauthorized usage and charges.',
+      'Database URL': 'This contains credentials to connect to your database. Anyone with this can read, modify, or delete your data.',
+      'Private Key': 'This is a cryptographic private key used for secure communications. If leaked, encrypted data can be decrypted.',
+      'JWT Token': 'JSON Web Tokens are used for authentication. This could allow someone to impersonate users.',
+      'API Key': 'Generic API key that provides access to a service or application.',
+      'Password': 'A password found directly in code, which is a major security risk.',
+      'OAuth Token': 'Used for authentication with third-party services.',
+      'Slack Token': 'Provides access to your Slack workspace and messages.',
+      'SendGrid API Key': 'Can be used to send emails through your SendGrid account.',
+      'Twilio API Key': 'Provides access to your Twilio account for sending SMS and making calls.'
     };
-    return explanations[type] || 'A sensitive credential that should not be in your code.';
+    return explanations[type] || 'This appears to be a sensitive credential that should not be exposed.';
   };
 
-  const getActionableAdvice = (type: string) => {
+  const getActionableAdvice = (type: string): string => {
     const advice: Record<string, string> = {
-      'AWS Access Key': 'Go to AWS IAM Console → Delete this key → Create a new one → Store it in .env file',
-      'AWS Secret Key': 'Go to AWS IAM Console → Rotate credentials → Never put the new one in code',
-      'GitHub Token': 'Go to GitHub Settings → Developer settings → Personal access tokens → Revoke this token → Create new one',
-      'Stripe Secret Key': 'Go to Stripe Dashboard → API Keys → Roll this key → Use environment variables',
-      'Google API Key': 'Go to Google Cloud Console → Credentials → Delete this key → Create new restricted key',
-      'Database URL': 'Change your database password → Update connection string → Move to .env file',
-      'Private Key': 'Generate a new key pair → Update your servers → Never commit private keys',
-      'JWT Token': 'This token is compromised → Invalidate it → Force users to re-login if needed',
-      'API Key Generic': 'Find the service this key belongs to → Regenerate the key → Store securely',
-      'Password in Code': 'Remove this password → Use environment variables instead → Update the password',
-      'OAuth Token': 'Revoke this token in the service settings → Re-authenticate to get a new one',
-      'Slack Token': 'Go to Slack API Dashboard → Revoke this token → Create new token with minimal permissions',
-      'SendGrid API Key': 'Go to SendGrid Settings → Revoke key → Create new key with limited scope',
-      'Twilio API Key': 'Go to Twilio Console → Delete this key → Create new key → Store in environment variables'
+      'AWS Access Key': '1. Go to AWS IAM Console immediately\n2. Delete this access key\n3. Create a new key pair\n4. Update your applications with the new key\n5. Store keys in environment variables or AWS Secrets Manager',
+      'GitHub Token': '1. Go to GitHub Settings → Developer settings → Personal access tokens\n2. Revoke this token immediately\n3. Generate a new token\n4. Store it in .env file and add .env to .gitignore',
+      'Stripe Secret Key': '1. Log into Stripe Dashboard\n2. Go to Developers → API keys\n3. Roll (regenerate) this secret key\n4. Update your application with new key\n5. Never commit keys to version control',
+      'Database URL': '1. Change your database password immediately\n2. Update the connection string in your .env file\n3. Rotate any other credentials in the connection string\n4. Review database access logs',
+      'Private Key': '1. Generate a new key pair immediately\n2. Update all systems using this key\n3. Revoke the old key\n4. Store private keys securely using a secrets manager',
+      'JWT Token': '1. Invalidate this token on your server\n2. Change your JWT secret\n3. Force re-authentication for affected users\n4. Never hardcode JWT secrets'
     };
-    return advice[type] || 'Rotate this credential immediately and store it securely in environment variables.';
+    return advice[type] || '1. Remove this secret from your code immediately\n2. Rotate/change the credential\n3. Store in environment variables\n4. Add .env files to .gitignore';
   };
 
   return (
-    <div className="min-h-screen bg-black text-white p-10">
+    <div className="min-h-screen bg-black text-white p-8">
       <div className="max-w-6xl mx-auto">
-        {/* Header */}
-        <div className="mb-10">
-          <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-[#BDE038] to-[#10454F] bg-clip-text text-transparent">
-            Secret Exposure Analyzer
-          </h1>
-          <p className="text-xl text-gray-400">
-            Paste your code or configuration files to scan for exposed secrets and credentials.
-          </p>
+        <div className="mb-8">
+          <button
+            onClick={() => window.history.back()}
+            className="px-4 py-2 rounded-full border border-white/40 text-sm hover:border-[#BDE038] hover:text-[#BDE038] transition-colors"
+          >
+            ← Back
+          </button>
         </div>
 
-        {/* Input Section */}
-        <div className="mb-8">
-          <textarea
-            className="w-full h-64 p-6 rounded-xl bg-[#121212] border border-white/30 text-lg font-mono focus:border-[#BDE038] focus:outline-none transition-colors resize-none"
-            placeholder="Paste your code here...
+        <h1 className="text-4xl font-bold mb-4 text-[#BDE038]">Secret Exposure Analyzer</h1>
+        <p className="text-gray-400 mb-8">
+          Paste your code, upload files, or scan an entire folder to detect exposed secrets
+        </p>
+
+        {/* Upload Mode Selector */}
+        <div className="flex gap-4 mb-6">
+          <button
+            onClick={() => { setUploadMode('text'); setFileResults([]); setResult(null); }}
+            className={`px-6 py-3 rounded-lg font-semibold transition-all ${uploadMode === 'text' ? 'bg-[#BDE038] text-black' : 'bg-white/10 text-white hover:bg-white/20'}`}
+          >
+            📝 Paste Code
+          </button>
+          <button
+            onClick={() => { setUploadMode('files'); setResult(null); }}
+            className={`px-6 py-3 rounded-lg font-semibold transition-all ${uploadMode === 'files' ? 'bg-[#BDE038] text-black' : 'bg-white/10 text-white hover:bg-white/20'}`}
+          >
+            📄 Upload Files
+          </button>
+          <button
+            onClick={() => { setUploadMode('folder'); setResult(null); }}
+            className={`px-6 py-3 rounded-lg font-semibold transition-all ${uploadMode === 'folder' ? 'bg-[#BDE038] text-black' : 'bg-white/10 text-white hover:bg-white/20'}`}
+          >
+            📁 Upload Folder
+          </button>
+        </div>
+
+        {/* Text Input Mode */}
+        {uploadMode === 'text' && (
+          <div className="space-y-4">
+            <textarea
+              className="w-full h-96 p-6 rounded-xl bg-[#121212] border border-white/30 text-sm font-mono focus:border-[#BDE038] focus:outline-none resize-none"
+              placeholder={`Paste your code here...
 
 Example:
-AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
-DATABASE_URL=postgresql://user:password@localhost:5432/mydb
-STRIPE_SECRET_KEY=sk_test_51HxJ8k2eZvKYlo2C..."
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-          />
-
-          <div className="flex gap-4 mt-4">
+AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE
+DATABASE_URL=postgresql://user:pass@localhost:5432/db
+STRIPE_SECRET_KEY=sk_test_...`}
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
+            />
             <button
-              onClick={handleAnalyze}
-              disabled={!input.trim() || isAnalyzing}
-              className="flex items-center gap-3 px-8 py-4 rounded-full bg-gradient-to-r from-[#10454F] to-[#BDE038] text-black text-lg font-semibold hover:shadow-lg hover:shadow-[#BDE038]/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              onClick={analyzeCode}
+              disabled={!code || analyzing}
+              className="w-full py-4 rounded-full bg-gradient-to-r from-[#10454F] to-[#BDE038] text-black text-lg font-semibold hover:shadow-lg hover:shadow-[#BDE038]/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isAnalyzing ? (
-                <>
-                  <span className="animate-spin">⏳</span>
-                  Analyzing...
-                </>
-              ) : (
-                <>
-                  <span>🔍</span>
-                  Analyze Code
-                </>
-              )}
-            </button>
-
-            <button
-              onClick={() => {
-                setInput('');
-                setResult(null);
-              }}
-              className="px-8 py-4 rounded-full border border-white/30 text-lg hover:border-white/50 transition-colors"
-            >
-              Clear
+              {analyzing ? 'Analyzing...' : 'Analyze Code'}
             </button>
           </div>
-        </div>
+        )}
 
-        {/* Results Section */}
-        {result && (
-          <div className="space-y-6">
+        {/* File Upload Mode */}
+        {uploadMode === 'files' && (
+          <div className="space-y-4">
+            <div className="border-2 border-dashed border-white/30 rounded-xl p-12 text-center hover:border-[#BDE038] transition-colors">
+              <input
+                type="file"
+                multiple
+                onChange={handleFileUpload}
+                className="hidden"
+                id="file-upload"
+                accept=".js,.ts,.tsx,.jsx,.py,.env,.json,.yml,.yaml,.xml,.md,.txt"
+              />
+              <label htmlFor="file-upload" className="cursor-pointer">
+                <div className="text-6xl mb-4">📄</div>
+                <div className="text-xl font-semibold mb-2">Click to upload files</div>
+                <div className="text-gray-400 text-sm">Supports: .js, .ts, .py, .env, .json, .yml, .txt, etc.</div>
+              </label>
+            </div>
+          </div>
+        )}
+
+        {/* Folder Upload Mode */}
+        {uploadMode === 'folder' && (
+          <div className="space-y-4">
+            <div className="border-2 border-dashed border-white/30 rounded-xl p-12 text-center hover:border-[#BDE038] transition-colors">
+              <input
+                type="file"
+                onChange={handleFolderUpload}
+                className="hidden"
+                id="folder-upload"
+                /* @ts-ignore */
+                webkitdirectory=""
+                directory=""
+                multiple
+              />
+              <label htmlFor="folder-upload" className="cursor-pointer">
+                <div className="text-6xl mb-4">📁</div>
+                <div className="text-xl font-semibold mb-2">Click to upload folder</div>
+                <div className="text-gray-400 text-sm">Select a folder to scan all files recursively</div>
+              </label>
+            </div>
+          </div>
+        )}
+
+        {/* Loading State */}
+        {analyzing && (
+          <div className="mt-8 p-8 bg-[#121212] border border-white/20 rounded-xl text-center">
+            <div className="text-[#BDE038] text-xl mb-2">Analyzing...</div>
+            <div className="text-gray-400 text-sm">Scanning for exposed secrets</div>
+          </div>
+        )}
+
+        {/* Single File Results */}
+        {result && uploadMode === 'text' && !analyzing && (
+          <div className="mt-8 space-y-6">
             {/* Summary Card */}
-            <div className={`p-6 rounded-xl border-2 ${getRiskColor(result.riskLevel)}`}>
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-3xl font-bold">Analysis Complete</h2>
-                <div className="text-right">
-                  <div className="text-sm text-gray-400">Risk Level</div>
-                  <div className="text-2xl font-bold uppercase">{result.riskLevel}</div>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-3 gap-6 text-center">
+            <div className={`p-6 rounded-xl border ${getRiskColor(result.riskLevel)}`}>
+              <div className="flex justify-between items-center">
                 <div>
-                  <div className="text-3xl font-bold">{result.foundSecrets.length}</div>
-                  <div className="text-sm text-gray-400">Secrets Found</div>
-                </div>
-                <div>
-                  <div className="text-3xl font-bold">{result.totalLines}</div>
-                  <div className="text-sm text-gray-400">Lines Scanned</div>
-                </div>
-                <div>
-                  <div className="text-3xl font-bold">
-                    {result.foundSecrets.filter(s => s.severity === 'critical').length}
+                  <div className="text-2xl font-bold">{result.riskLevel.toUpperCase()} RISK</div>
+                  <div className="text-sm opacity-80 mt-1">
+                    {result.foundSecrets.length} secret(s) found in {result.totalLines} lines
                   </div>
-                  <div className="text-sm text-gray-400">Critical Issues</div>
+                </div>
+                <div className="text-5xl">
+                  {result.riskLevel === 'critical' ? '🚨' : result.riskLevel === 'high' ? '⚠️' : result.riskLevel === 'medium' ? '⚡' : result.riskLevel === 'safe' ? '✅' : '🔍'}
                 </div>
               </div>
             </div>
 
-            {/* Detected Secrets */}
+            {/* Secrets List */}
             {result.foundSecrets.length > 0 ? (
-              <div className="bg-[#121212] border border-red-500/50 rounded-xl p-6">
-                <h3 className="text-[2.69rem] font-bold mb-6 flex items-center gap-2">
-                  <span>⚠️</span>
-                  Detected Secrets ({result.foundSecrets.length})
-                </h3>
-
-                <div className="space-y-4">
-                  {result.foundSecrets.map((secret, index) => (
-                    <div
-                      key={index}
-                      className="bg-black/50 border border-white/20 rounded-lg p-5 hover:border-[#BDE038]/50 transition-colors"
-                    >
-                      <div className="flex items-start justify-between mb-3">
-                        <div className="flex items-center gap-3">
-                          <span className="text-3xl">{getSeverityIcon(secret.severity)}</span>
-                          <div>
-                            <h4 className="text-[2.24rem] font-semibold">{secret.type}</h4>
-                            <p className="text-[0.923rem] text-gray-400" style={{ textShadow: '0 0 8px rgba(189, 224, 56, 0.3)' }}>
-                              Found on Line {secret.line}
-                            </p>
-                          </div>
+              <div className="space-y-4">
+                {result.foundSecrets.map((secret, index) => (
+                  <div key={index} className="p-6 bg-[#121212] border border-white/20 rounded-xl">
+                    <div className="flex items-start gap-4">
+                      <div className="text-3xl">{getSeverityIcon(secret.severity)}</div>
+                      <div className="flex-1">
+                        <h3 className="text-xl font-bold mb-2">{secret.type}</h3>
+                        <p className="text-sm text-gray-400 mb-4">Found on Line {secret.line}</p>
+                        <p className="text-gray-300 mb-4">{secret.description}</p>
+                        
+                        {/* What is this */}
+                        <div className="mb-4 p-4 bg-blue-500/10 border border-blue-500/30 rounded-lg">
+                          <div className="font-semibold text-blue-400 mb-2">ℹ️ What is this?</div>
+                          <p className="text-sm text-gray-300">{getSecretExplanation(secret.type)}</p>
                         </div>
-                        <span className={`px-3 py-1 rounded-full text-[0.672rem] font-semibold uppercase ${getRiskColor(secret.severity)}`}>
-                          {secret.severity}
-                        </span>
+
+                        {/* Secret Preview */}
+                        <div className="mb-4 p-4 bg-black/50 border border-white/10 rounded-lg">
+                          <div className="font-semibold text-gray-400 mb-2">Detected Secret:</div>
+                          <code className="text-sm text-red-400 font-mono break-all">{secret.match}</code>
+                        </div>
+
+                        {/* What to do */}
+                        <div className="p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
+                          <div className="font-semibold text-yellow-400 mb-2">⚡ What to do:</div>
+                          <pre className="text-sm text-gray-300 whitespace-pre-wrap">{getActionableAdvice(secret.type)}</pre>
+                        </div>
                       </div>
-
-                      <p className="text-gray-300 mb-3 text-[1.12rem]">{secret.description}</p>
-                      
-                      {/* What is this? */}
-                      <div className="mb-3 p-3 bg-blue-500/10 border border-blue-500/30 rounded">
-                        <p className="text-[0.941rem] text-blue-300">
-                          <strong>What is this?</strong> {getSecretExplanation(secret.type)}
-                        </p>
-                      </div>
-                      
-                      <div className="bg-black/80 border border-white/10 rounded p-3 font-mono text-[0.941rem]">
-                        <code className="text-red-400">{secret.match}</code>
-                      </div>
-
-                      {/* What to do */}
-                      <div className="mt-3 p-3 bg-yellow-500/10 border border-yellow-500/30 rounded">
-                        <p className="text-[0.941rem] text-yellow-300">
-                          <strong>⚠️ What to do:</strong> {getActionableAdvice(secret.type)}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Recommendations */}
-                <div className="mt-6 p-5 bg-[#BDE038]/10 border border-[#BDE038]/30 rounded-lg">
-                  <h4 className="text-lg font-semibold mb-3 text-[#BDE038]">🛡️ What You Need to Do Right Now</h4>
-                  
-                  <div className="space-y-4 text-gray-300">
-                    <div>
-                      <p className="font-semibold text-white mb-2">Step 1: Delete These Secrets Immediately</p>
-                      <p className="text-sm">Remove all the detected secrets from your code. Don't commit this code to GitHub or any version control system.</p>
-                    </div>
-
-                    <div>
-                      <p className="font-semibold text-white mb-2">Step 2: Change Your Passwords/Keys</p>
-                      <p className="text-sm">Go to each service (AWS, Stripe, GitHub, etc.) and generate new keys. The old ones are now compromised since they were in your code.</p>
-                    </div>
-
-                    <div>
-                      <p className="font-semibold text-white mb-2">Step 3: Use Environment Variables Instead</p>
-                      <p className="text-sm mb-2">Instead of putting secrets in your code, use a <code className="bg-black/50 px-2 py-1 rounded">.env</code> file:</p>
-                      <div className="bg-black/80 border border-white/10 rounded p-3 font-mono text-sm">
-                        <div className="text-gray-500"># Create a file called .env in your project root</div>
-                        <div className="text-green-400">AWS_SECRET_KEY=your_secret_here</div>
-                        <div className="text-green-400">DATABASE_URL=your_db_url_here</div>
-                      </div>
-                      <p className="text-sm mt-2">Then access them in your code with <code className="bg-black/50 px-2 py-1 rounded">process.env.AWS_SECRET_KEY</code></p>
-                    </div>
-
-                    <div>
-                      <p className="font-semibold text-white mb-2">Step 4: Add .env to .gitignore</p>
-                      <p className="text-sm mb-2">Create or edit your <code className="bg-black/50 px-2 py-1 rounded">.gitignore</code> file and add this line:</p>
-                      <div className="bg-black/80 border border-white/10 rounded p-3 font-mono text-sm">
-                        <div className="text-green-400">.env</div>
-                        <div className="text-green-400">.env.local</div>
-                      </div>
-                      <p className="text-sm mt-2">This prevents your secrets from ever being committed to GitHub.</p>
-                    </div>
-
-                    <div className="pt-3 border-t border-white/20">
-                      <p className="font-semibold text-white mb-2">📚 Need More Help?</p>
-                      <ul className="text-sm space-y-1">
-                        <li>• <a href="https://www.npmjs.com/package/dotenv" target="_blank" rel="noopener noreferrer" className="text-[#BDE038] hover:underline">Learn about dotenv (for environment variables)</a></li>
-                        <li>• <a href="https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/removing-sensitive-data-from-a-repository" target="_blank" rel="noopener noreferrer" className="text-[#BDE038] hover:underline">How to remove secrets from GitHub history</a></li>
-                        <li>• <a href="https://cheatsheetseries.owasp.org/cheatsheets/Secrets_Management_Cheat_Sheet.html" target="_blank" rel="noopener noreferrer" className="text-[#BDE038] hover:underline">OWASP Secrets Management Guide</a></li>
-                      </ul>
                     </div>
                   </div>
-                </div>
+                ))}
               </div>
             ) : (
-              <div className="bg-[#121212] border border-green-500/50 rounded-xl p-6">
-                <h3 className="text-2xl font-bold mb-4 flex items-center gap-2 text-green-400">
-                  <span>✓</span>
-                  No Secrets Detected
-                </h3>
-                <p className="text-gray-300 mb-4">
-                  Great! We didn't find any obvious secrets in your code. However, always practice secure coding:
-                </p>
-                <ul className="space-y-2 text-gray-400 ml-4">
-                  <li>• Continue using environment variables for sensitive data</li>
-                  <li>• Review your code for business logic vulnerabilities</li>
-                  <li>• Keep dependencies up to date</li>
-                  <li>• Use pre-commit hooks to prevent accidental commits</li>
-                </ul>
+              <div className="p-8 bg-green-500/10 border border-green-500/30 rounded-xl text-center">
+                <div className="text-5xl mb-4">✅</div>
+                <div className="text-2xl font-bold text-green-400 mb-2">No Secrets Detected!</div>
+                <div className="text-gray-400">Your code appears to be safe from exposed credentials.</div>
               </div>
             )}
           </div>
         )}
 
-        {/* Info Section */}
-        {!result && (
-          <div className="bg-[#121212] border border-white/20 rounded-xl p-6 mt-8">
-            <h3 className="text-xl font-semibold mb-4">What we scan for:</h3>
-            <div className="grid md:grid-cols-2 gap-4 text-gray-400">
-              <div>
-                <p className="font-semibold text-white mb-2">🔑 API Keys & Tokens</p>
-                <ul className="text-sm space-y-1 ml-4">
-                  <li>• AWS Access & Secret Keys</li>
-                  <li>• GitHub Tokens</li>
-                  <li>• Stripe API Keys</li>
-                  <li>• Google API Keys</li>
-                </ul>
-              </div>
-              <div>
-                <p className="font-semibold text-white mb-2">🗄️ Database & Infrastructure</p>
-                <ul className="text-sm space-y-1 ml-4">
-                  <li>• Database Connection Strings</li>
-                  <li>• Private Cryptographic Keys</li>
-                  <li>• JWT Tokens</li>
-                  <li>• OAuth Tokens</li>
-                </ul>
+        {/* Multiple File Results */}
+        {fileResults.length > 0 && (uploadMode === 'files' || uploadMode === 'folder') && !analyzing && (
+          <div className="mt-8 space-y-6">
+            <div className="p-6 bg-[#121212] border border-white/20 rounded-xl">
+              <h2 className="text-2xl font-bold mb-4">Scan Results</h2>
+              <div className="text-gray-400">
+                Scanned {fileResults.length} file(s) with exposed secrets
               </div>
             </div>
+
+            {fileResults.map((fileResult, fileIndex) => (
+              <div key={fileIndex} className="p-6 bg-[#121212] border border-white/20 rounded-xl">
+                <h3 className="text-xl font-bold text-[#BDE038] mb-4">📄 {fileResult.fileName}</h3>
+                <div className={`p-4 rounded-lg border mb-4 ${getRiskColor(fileResult.result.riskLevel)}`}>
+                  <div className="font-semibold">{fileResult.result.riskLevel.toUpperCase()} RISK</div>
+                  <div className="text-sm opacity-80">
+                    {fileResult.result.foundSecrets.length} secret(s) in {fileResult.result.totalLines} lines
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  {fileResult.result.foundSecrets.map((secret, secretIndex) => (
+                    <div key={secretIndex} className="p-4 bg-black/30 border border-white/10 rounded-lg">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="text-xl">{getSeverityIcon(secret.severity)}</span>
+                        <span className="font-semibold">{secret.type}</span>
+                        <span className="text-sm text-gray-500">Line {secret.line}</span>
+                      </div>
+                      <code className="text-sm text-red-400 font-mono block mt-2">{secret.match}</code>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* No Results from File Upload */}
+        {fileResults.length === 0 && (uploadMode === 'files' || uploadMode === 'folder') && !analyzing && uploadMode !== 'text' && (
+          <div className="mt-8 p-8 bg-green-500/10 border border-green-500/30 rounded-xl text-center">
+            <div className="text-5xl mb-4">✅</div>
+            <div className="text-2xl font-bold text-green-400 mb-2">No Secrets Found!</div>
+            <div className="text-gray-400">All scanned files appear to be safe.</div>
           </div>
         )}
       </div>
